@@ -1,0 +1,41 @@
+<main class="container main">
+    <div class="row">
+        <h2>Программы обучения on-line</h2>
+        <p>Получите востребованную профессию и возможность открыть бизнес в сфере информационных технологий. Вы
+            получите фундаментальные знания, сделаете осознанный выбор специализации, прокачаетесь в выбранном
+            направлении.</p>
+        <article class="col col__article">
+            <fieldset class="course">
+                <legend>Курсы:</legend>
+                <div class="treeHTML">
+                    <p>Запись на курсы сегодня {{ date }}:</p>
+                    <ul>
+                        <li> Python </li>
+                        <li> JavaScript </li>
+                        <li> HTML/CSS </li>
+                    </ul>
+                </div>
+            </fieldset>
+        </article>
+        <aside class="col col__aside">
+            <form action="" method="post">
+                <fieldset>
+                    <legend>Зарегистрируйтесь:</legend>
+                    <p><label class="title" for="name">Ваше имя:</label>
+                        <input type="text" name="name" id="name"><br />
+                        <label class="title" for="email">Ваш email:</label>
+                        <input type="text" name="email" id="email">
+                    </p>
+                    <p><label for="location" class="title">Ближайший центр:</label>
+                        <select name="location" id="location">
+                            <option value="ny">Москва</option>
+                            <option value="il">Санкт-Петербург</option>
+                            <option value="ca">Екатеринбург</option>
+                        </select>
+                    </p>
+                </fieldset>
+                <div class="submit"><input type="submit" value="Регистрация" /></div>
+            </form>
+        </aside>
+    </div>
+</main>

@@ -1,0 +1,82 @@
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.footnav {
+  overflow: hidden;
+  background-color: #e9e9e9;
+  height: 30px;
+  text-align: center;
+  padding-top: 5px;
+}
+
+/* задаём высоту и ширину меню */
+ul.nav {
+  background: #e9e9e9;
+  height: 30px;
+  font-size: 17px;
+}
+
+/* Первый уровень вложенности */
+ul.nav li {
+  background: #b6b6b6;
+  border-right: 1px solid #FFFFFF;
+  float: left;
+  /*делаем меню горизонтальным*/
+  height: 30px;
+  list-style: none;
+}
+
+/* Второй и последующие уровни вложенности */
+ul.nav li ul li {
+  border-bottom: 1px solid white;
+  height: auto;
+}
+
+/* Пункты меню */
+ul.nav li a {
+  text-decoration: none;
+  display: block;
+  color: white;
+  width: 60px;
+  padding: 5px 5px 5px 15px;
+}
+
+/* Скрываем вложенные пункты */
+ul.nav li ul {
+  display: none;
+}
+
+ul.nav label {
+  float: right;
+  margin-right: 20px;
+  box-shadow: 0px 3px 0px 0px rgb(56 61 68 / 20%);
+}
+
+/* Выпадающее меню */
+ul.nav li:hover {
+  background: rgb(237, 236, 236);
+  position: relative;
+}
+
+ul.nav ul li:hover>a,
+ul.nav li:hover>a {
+  color: black;
+}
+
+/* 1-й уровень меню раскрывается вниз */
+ul.nav li:hover>ul {
+  border-top: 1px solid white;
+  display: block;
+  position: absolute;
+  top: 30px;
+  left: 0;
+}
+
+/* 2-й и последующие уровни расскрываются вправо */
+ul.nav li:hover ul li ul {
+  position: absolute;
+  top: 0;
+  left: 150px;
+}
