@@ -28,21 +28,11 @@ class Index(BaseView):
         return ResponseData(request, body=body)
 
 
-class Homepage(BaseView):
+class About(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
-        body = render(
-            'home.html',
-            time=str(datetime.now()), lst=[1, 2, 3], session_id=request.extra.get('session_id'))
-        return ResponseData(request, body=body)
-
-
-class Hi(BaseView):
-    def get(self, request: RequestData, *args, **kwargs):
-        body = render('hello.html', name='незнакомец')
+        body = render('about.html')
         return ResponseData(request, body=body)
 
     def post(self, request: RequestData, *args, **kwargs):
-        raw_name = request.POST.get('name')
-        name = raw_name[0] if raw_name else 'незнакомец'
-        body = render('hello.html', name=name)
+        body = render('about.html', post=f'Получен запрос POST: {request.POST}')
         return ResponseData(request, body=body)
