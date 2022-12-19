@@ -1,14 +1,15 @@
+import mimetypes
 from http import HTTPStatus
 from pathlib import Path
 from typing import List, Type
-# from wsgiref import util
+from wsgiref import util
 
 from fwk.url import Url
 from fwk.request import RequestData
 from fwk.response import ResponseData
 from fwk.exceptions import NotAllowed, FwkException, NotFound
 from fwk.user import users, User
-from fwk.view import BaseView, StaticFile
+from fwk.view import BaseView
 from fwk.middleware import BaseMiddleware
 
 
@@ -22,14 +23,13 @@ class Framework:
         """ Обработка HTTP запросов пользователя"""
         try:
             request = RequestData(environ)  # GET, POST, COOKIE, обработанные environ
-            view = self._find_view(request.path_info)()
 
-            if request.GET:
-                print(f'Получен Get запрос с параметрами {request.GET}')
-            if request.POST:
-                print(f'Получен Post запрос с параметрами {request.POST}')
-            if request.COOKIE:
-                print(f'Получены COOKIE: {request.COOKIE}')
+            if static_file := self._get_static_file(request.path_info):
+                if mime := mimetypes.guess_type(Path(static_file)):
+                    start_response("200 OK", [("Content-Type", mime[0])])
+                    return util.FileWrapper(open(static_file, "rb"))
+
+            view = self._find_view(request.path_info)()
 
             # 'Front Controller' до 'Page Controller'
             self._apply_middleware_to_request(request, users)
@@ -41,12 +41,9 @@ class Framework:
             self._apply_middleware_to_response(response, users)
 
             # Отправляем клиенту
-            status_code = self._get_status(response.status_code)
-            start_response(status_code, response.headers)
+            start_response(self._get_status(response.status_code), response.headers)
             if response.body:
                 return iter([response.body.encode('utf-8')])
-            # if file := request.file:
-            #     return util.FileWrapper(open(file, "rb"))
 
         except FwkException as e:
             start_response(e.code, [e.headers])
@@ -54,17 +51,17 @@ class Framework:
 
     def _find_view(self, requested_url: str) -> Type[BaseView]:
         """ Возвращаем view по заданному url """
-
         for url in self.urls:  # Ищем в url списке доступных
             if requested_url == url.url:
                 return url.view
-        # Статика
-        if requested_url.startswith(self.settings.get('STATIC')):  # Загрузка статических файлов
+        raise NotFound  # Страница не найдена
+
+    def _get_static_file(self, requested_url: str) -> str:
+        if requested_url.startswith(self.settings.get('STATIC')):  # Запрошен статический файл ?
             fn = Path(self.settings.get('BASE_DIR', '')) / requested_url[1:-1]  # убираем крайние слэши
-            if fn.exists():
-                return StaticFile
-        else:
-            raise NotFound  # Страница не найдена
+            if fn.is_file():
+                return str(fn)
+        return ''
 
     @staticmethod
     def _get_status(code: int) -> str:
