@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Панель администрирования</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="menu">
+        <!-- <li><a href="/">Главная</a></li>
+		<li><a href="/about/">О нас</a></li> -->
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="adm.html">Адм.панель</a></li>
+        <li><a href="about.html">О нас</a></li>
+        <hr>
+    </div>
+
+    <p>
+    <h1>Панель администрирования</h1>
+    </p>
+    <fieldset>
+        <div class="adm-parent">
+            <li class="adm-1">
+                <h2>Категории</h2>
+            </li>
+            <li class="adm-2"><a href="index.html">Добавить</a></li>
+            <li class="adm-2"><a href="index.html">Показать</a></li>
+        </div>
+        <div class="adm-parent">
+            <li class="adm-1">
+                <h2>Курсы</h2>
+            </li>
+            <li class="adm-2"><a href="index.html">Добавить</a></li>
+            <li class="adm-2"><a href="index.html">Показать</a></li>
+        </div>
+    </fieldset>
+
+    <!-- Добавить новую категорию -->
+    <form action="" method="post">
+        <fieldset>
+            <legend>Добавить новую категорию</legend>
+            <p>
+                <label class="title" for="name">Категория:</label>
+                <input type="text" name="name" id="name"><br />
+            </p>
+        </fieldset>
+        <div class="submit"><input type="submit" value="Добавить" /></div>
+    </form>
+
+    <!-- Добавить новый курс -->
+    <form action="" method="post">
+        <fieldset>
+            <legend>Добавить новый курс</legend>
+            <p>
+                <label class="title" for="cat">Категория:</label>
+                <select>
+                    <option>Python</option>
+                    <option>Java</option>
+                    <option>Cpp</option>
+                </select>
+                <label class="title">Форма обучения:</label>
+                <select>
+                    <option>Вебинар</option>
+                    <option>Interactive</option>
+                    <option>Longread</option>
+                </select>
+
+                <label class="title" for="name">Курс:</label>
+                <input type="text" name="name" id="name"><br />
+            </p>
+        </fieldset>
+        <div class="submit"><input type="submit" value="Добавить" /></div>
+    </form>
+
+    <!-- Список категорий и курсов -->
+    <fieldset>
+        <legend>Список категорий и курсов</legend>
+        <ul class="category-list">
+            <li>Элемент списка</li>
+            <ul>
+                <li>картофель</li>
+                <li>перец</li>
+                <li>морковь</li>
+            </ul>
+            <li>Элемент списка</li>
+            <li>Элемент списка</li>
+            <li>Элемент списка</li>
+            <li>Элемент списка</li>
+        </ul>
+    </fieldset>
+</body>
+
+</html>

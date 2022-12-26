@@ -1,0 +1,40 @@
+{% extends "/layout/basis.html" %}
+
+{% block title %}
+О нас
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/style.css">
+{% endblock %}
+
+{% block menu %}
+{% include "/layout/menu.html" %}
+{% endblock %}
+
+{% block body %}
+<p><h1>Панель администрирования</h1></p>
+<form action="" method="post">
+    <fieldset>
+        <legend>Добавить новый курс</legend>
+        <p>
+            <label class="title">Категория:</label>
+            <select name="categories">
+                {% for ctg in categories -%}
+                <option>{{ ctg.name }}</option>
+                {% endfor %}
+            </select>
+            <label class="title">Форма обучения:</label>
+            <select name="format">
+                {% for fmt in formats -%}
+                <option>{{ fmt }}</option>
+                {% endfor %}
+            </select>
+            <label class="title" for="name">Курс:</label>
+            <input type="text" name="name" id="name"><br/>
+        </p>
+    </fieldset>
+    <div class="submit"><input type="submit" value="Добавить"/></div>
+</form>
+<p>{{ msg }}</p>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "/layout/basis.html" %}
+
+{% block title %}
+О нас
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/style.css">
+{% endblock %}
+
+{% block menu %}
+{% include "/layout/menu.html" %}
+{% endblock %}
+
+{% block body %}
+<p><h1>Панель администрирования</h1></p>
+<fieldset>
+    <div class="adm-parent">
+        <li class="adm-1"><h2>Категории</h2></li>
+        <li class="adm-2"><a href="/add-ctg">Добавить</a></li>
+        <li class="adm-2"><a href="/show-courses">Показать</a></li>
+    </div>
+    <div class="adm-parent">
+        <li class="adm-1"><h2>Курсы</h2></li>
+        <li class="adm-2"><a href="/add-course">Добавить</a></li>
+        <li class="adm-2"><a href="/show-courses">Показать</a></li>
+    </div>
+</fieldset>
+{% endblock %}
