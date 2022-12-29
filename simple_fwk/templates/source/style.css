@@ -191,3 +191,33 @@ content {
     /* padding: 10px 0; */
     list-style-type: none;
 }
+
+.ctgs {
+    height: 200px;
+    overflow: hidden;
+    overflow-y: scroll;
+    background-color: rgb(234, 234, 234);
+}
+
+.tree,
+.tree ul {
+    list-style: none;
+}
+
+.tree span:hover {
+    font-weight: bold;
+}
+
+.tree span {
+    cursor: pointer;
+}
+
+.hide {}
+
+.hide::before {
+    content: "+";
+}
+
+.show::before {
+    content: "-";
+}
