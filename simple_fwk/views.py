@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from datetime import datetime
 
-from patterns.structural import AppRoute
+from patterns.structural import AppRoute, Debug
 
 if TYPE_CHECKING:
     from fwk.request import RequestData
@@ -56,10 +56,12 @@ class Adm(BaseView):
 
 @AppRoute(routes=urlpatterns, url='/add-ctg/')
 class AddCategory(BaseView):
+    @Debug(name='AddCategory-get')
     def get(self, request: RequestData, *args, **kwargs):
         body = render('adm_add_ctg.html', tree=engine.get_html_tree(engine.category_tree))
         return ResponseData(request, body=body)
 
+    @Debug(name='AddCategory-post')
     def post(self, request: RequestData, *args, **kwargs):
         ctg = request.POST.get('name', [''])[0]
         path = request.POST.get('selected-ctg', [''])[0]
