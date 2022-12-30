@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from datetime import datetime
 
+from patterns.structural import AppRoute
+
 if TYPE_CHECKING:
     from fwk.request import RequestData
 from patterns.creational import Engine
@@ -11,8 +13,10 @@ from fwk.view import BaseView
 
 engine = Engine()
 engine.load_test_data()  # загрузка тестовых данных
+urlpatterns = []
 
 
+@AppRoute(routes=urlpatterns, url='/')
 class Index(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         user_name = request.extra.get('user_name', 'Незнакомец')
@@ -32,6 +36,7 @@ class Index(BaseView):
         return ResponseData(request, body=body)
 
 
+@AppRoute(routes=urlpatterns, url='/about/')
 class About(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         body = render('about.html')
@@ -42,12 +47,14 @@ class About(BaseView):
         return ResponseData(request, body=body)
 
 
+@AppRoute(routes=urlpatterns, url='/adm/')
 class Adm(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         body = render('adm.html')
         return ResponseData(request, body=body)
 
 
+@AppRoute(routes=urlpatterns, url='/add-ctg/')
 class AddCategory(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         body = render('adm_add_ctg.html', tree=engine.get_html_tree(engine.category_tree))
@@ -66,6 +73,7 @@ class AddCategory(BaseView):
                                         msg=f'Ошибка создания категории: {ctg}'))
 
 
+@AppRoute(routes=urlpatterns, url='/add-course/')
 class AddCourse(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         fmts = engine.get_learning_formats()
@@ -88,6 +96,7 @@ class AddCourse(BaseView):
                                                  msg=f'Ошибка создания курса: {name}'))
 
 
+@AppRoute(routes=urlpatterns, url='/show-courses/')
 class ShowCourses(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         body = render('adm_show_courses.html', tree=engine.get_html_tree(engine.category_tree))

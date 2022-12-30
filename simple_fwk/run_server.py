@@ -5,7 +5,7 @@ from wsgiref import simple_server
 
 from fwk.main import Framework
 from fwk.middleware import middlewares
-from urls import urlpatterns
+from views import urlpatterns
 
 BASE_DIR = Path.cwd().resolve()
 TEMPLATES = '/templates/'
