@@ -77,53 +77,98 @@ class CourseFactory:
 class Category:
     """ Категория """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
-        self.courses = []  # курсы
+        self.categories: list[Category] = []  # подкатегории
+        self.courses: list[Course] = []  # курсы
 
     def __repr__(self):
-        return f'{self.name} : {self.courses}'
+        # return f'{self.name} -> {self.categories}'
+        return f'K[{self.name}]'
 
 
 class Engine:
     """ Основной интерфейс проекта """
 
     def __init__(self):
-        self.categories = []
+        self.category_tree: Category = Category('ROOT')
 
     @staticmethod
-    def get_obj_by_name(_name, _iter):
-        return next((val for val in _iter if val.name == _name), None)
+    def get_obj_by_name(name, lst):
+        return next((val for val in lst if val.name == name), None)
 
     @staticmethod
     def get_learning_formats():
         return tuple(CourseFactory.learning_formats.keys())
 
-    def create_category(self, ctg_name):
-        if all([ctg_name, not self.get_obj_by_name(ctg_name, self.categories)]):
-            self.categories.append(Category(ctg_name))
+    def get_category_node(self, ctg_path: str) -> Category or None:
+        ctg = self.category_tree  # корневой узел
+        ctg_path = ctg_path[4:] if ctg_path.startswith('ROOT') else ctg_path
+        for sub_ctg in map(str.strip, ctg_path.split('->')):  # пропускаем ROOT
+            if not sub_ctg:
+                continue
+            if not (ctg := self.get_obj_by_name(sub_ctg, ctg.categories)):
+                return None
+        return ctg
+
+    def create_category(self, ctg_path: str, ctg_name: str) -> bool:
+        if not (ctg_node := self.get_category_node(ctg_path)):
+            return False
+        if all([ctg_name, not self.get_obj_by_name(ctg_name, ctg_node.categories)]):
+            ctg_node.categories.append(Category(ctg_name))
             return True
         return False
 
-    def create_course(self, ctg_name, course_name, form):
-        if all([ctg_name, course_name, form in CourseFactory.learning_formats]):
-            if ctg_obj := self.get_obj_by_name(ctg_name, self.categories):
-                if not self.get_obj_by_name(course_name, ctg_obj.courses):
-                    ctg_obj.courses.append(CourseFactory.create(course_name, form))
-                    return True
+    def create_course(self, ctg_path: str, course_name: str, form: str) -> bool:
+        if not (ctg_node := self.get_category_node(ctg_path)):
+            return False
+        if all([course_name, form in CourseFactory.learning_formats]):
+            if not self.get_obj_by_name(course_name, ctg_node.courses):
+                ctg_node.courses.append(CourseFactory.create(course_name, form))
+                return True
         return False
 
+    def get_nodes(self, tree: Category):
+        yield f'<li>{tree.name}'
+        # yield f'<div class="course">[{", ".join([course.name for course in tree.courses])}]</div>'
+        yield f'<div>[{", ".join([course.name for course in tree.courses])}]</div>'
+        for child in tree.categories:
+            yield '<ul>'
+            yield from self.get_nodes(child)
+            yield '</ul>'
+        yield '</li>'
+
+    def get_html_tree(self, tree: Category):
+        html_tree = "\n".join([name for name in self.get_nodes(tree)])
+        return f'<div class ="container" ><ul class ="tree" id="tree" >{html_tree}</ul></div>'
+
     def load_test_data(self):
-        courses = (("Основы программирования", ("Введение в алгоритмы", "Git", "Английский для IT-специалистов")),
-                   ('Программирование на Python', ("Основы Python", "Python ООП", "Django Framework", "Django REST")),
-                   ('Программирование на Java', ("Основы языка Java", "Java ООП")),
-                   ('JavaScript', ()),
-                   ('Networks', ("Компьютерные сети", "Методы сбора и обработки данных из сети Интернет")),)
+        test_categories = [
+            ['ROOT->', 'Программирование'],
+            ['->Программирование', 'Программирование на Python'],
+            ['->Программирование->Программирование на Python', 'Frameworks'],
+            ['->Программирование', 'Программирование на Java'],
+            ['->Программирование', 'JavaScript'],
+            ['->', 'Общий блок'],
+            ['->Общий блок', 'Введение'],
+            ['->Общий блок', 'WEB'],
+            ['->Общий блок', 'Компьютерные сети'],
+        ]
+        test_courses = [
+            ('->Программирование->Программирование на Python', ['Основы языка Python', 'Python ООП']),
+            ('->Программирование->Программирование на Python->Frameworks', ['Django', 'DRF', 'Flask', 'FastAPI']),
+            ('->Программирование->Программирование на Java', ['Введение в JAVA', 'ООП на JAVA']),
+            ('->Общий блок->Введение', ['Основы программирования', 'Введение в алгоритмы', 'Git']),
+            ('->Общий блок->WEB', ['HTML / CSS', 'Веб разработка']),
+            ('->Общий блок->Компьютерные сети', ['TCP/IP', 'Методы сбора и обработки данных в сети Интернет']),
+        ]
+
         formats = self.get_learning_formats()
-        for ctg, courses in courses:
-            self.create_category(ctg)
-            for course in courses:
-                self.create_course(ctg, course, formats[len(course) % len(formats)])
+        for path, ctg_name in test_categories:
+            self.create_category(path, ctg_name)
+        for path, course_names in test_courses:
+            for course in course_names:
+                self.create_course(path, course, formats[len(course) % len(formats)])
 
 
 class SingletonByName(type):
@@ -153,8 +198,13 @@ class Logger(metaclass=SingletonByName):
 if __name__ == "__main__":
     engine = Engine()
     engine.load_test_data()
-    logger1, logger2 = Logger('log1'), Logger('log2')
-    print(logger1.filename, logger2.filename)
-    print(Logger('log1').filename, Logger('log2').filename)  # убеждаемся, что экземпляр класса один для имени
-    Logger('log1').log(engine.categories)
-    Logger('log2').log(engine.categories)
+    print(engine.get_html_tree(engine.category_tree))
+
+
+
+    # print(engine.category_tree)
+    # logger1, logger2 = Logger('log1'), Logger('log2')
+    # print(logger1.filename, logger2.filename)
+    # print(Logger('log1').filename, Logger('log2').filename)  # убеждаемся, что экземпляр класса один для имени
+    # Logger('log1').log(engine.category_tree)
+    # Logger('log2').log(engine.category_tree)

@@ -16,15 +16,8 @@
 <p><h1>Панель администрирования</h1></p>
 <fieldset>
     <legend>Список категорий и курсов</legend>
-    <ul class="category-list">
-        {% for ctg in categories -%}
-        <li>{{ ctg.name }}</li>
-        <ul>
-            {% for crs in ctg.courses -%}
-            <li>{{ crs.name }}</li>
-            {% endfor %}
-        </ul>
-        {% endfor %}
-    </ul>
+    <div class="ctgs">
+            {{ tree }}
+    </div>
 </fieldset>
 {% endblock %}

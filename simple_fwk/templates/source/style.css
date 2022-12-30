@@ -204,20 +204,15 @@ content {
     list-style: none;
 }
 
+.tree div {
+    color: blue;
+    display: inline
+}
+
 .tree span:hover {
     font-weight: bold;
 }
 
 .tree span {
     cursor: pointer;
-}
-
-.hide {}
-
-.hide::before {
-    content: "+";
-}
-
-.show::before {
-    content: "-";
 }

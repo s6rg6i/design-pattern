@@ -4,7 +4,7 @@ body {
     color: #666;
     background-color: #f8f8f8;
 }
-
+ul { padding-inline-start: 20px; }
 li {
     line-height: 1.6em;
 }
@@ -63,7 +63,7 @@ tr.head th:last-child {
 }
 
 fieldset {
-    width: 400px;
+    width: 480px;
     margin-top: 20px;
     border: 1px solid #d6d6d6;
     background-color: #ffffff;
@@ -182,7 +182,7 @@ content {
 
 
 .category-list {
-    padding: 0 20px;
+    padding: 0 1px;
 }
 
 .category-list li {
@@ -190,4 +190,30 @@ content {
     border-bottom: 3px solid #efefef;
     /* padding: 10px 0; */
     list-style-type: none;
+}
+
+.ctgs {
+    height: 200px;
+    overflow: hidden;
+    overflow-y: scroll;
+    background-color: rgb(234, 234, 234);
+}
+
+.tree,
+.tree ul {
+    list-style: none;
+}
+
+.tree div {
+    color: #79bc9a;
+    display: inline;
+    font-size: 80%;
+}
+
+.tree span:hover {
+    font-weight: bold;
+}
+
+.tree span {
+    cursor: pointer;
 }

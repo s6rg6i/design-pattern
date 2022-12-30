@@ -50,37 +50,45 @@ class Adm(BaseView):
 
 class AddCategory(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
-        body = render('adm_add_ctg.html')
+        body = render('adm_add_ctg.html', tree=engine.get_html_tree(engine.category_tree))
         return ResponseData(request, body=body)
 
     def post(self, request: RequestData, *args, **kwargs):
         ctg = request.POST.get('name', [''])[0]
-        if engine.create_category(ctg):
-            return ResponseData(request, body=render('adm_add_ctg.html', msg=f'Создана новая категория: {ctg}'))
-        return ResponseData(request, body=render('adm_add_ctg.html', msg=f'Ошибка создания категории: {ctg}'))
+        path = request.POST.get('selected-ctg', [''])[0]
+        if engine.create_category(path, ctg):
+            return ResponseData(request, body=render('adm_add_ctg.html',
+                                                     tree=engine.get_html_tree(engine.category_tree),
+                                                     msg=f'Создана новая категория: {ctg}'))
+        return ResponseData(request,
+                            body=render('adm_add_ctg.html',
+                                        tree=engine.create_category(path, ctg),
+                                        msg=f'Ошибка создания категории: {ctg}'))
 
 
 class AddCourse(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         fmts = engine.get_learning_formats()
-        ctgs = engine.categories
-        body = render('adm_add_course.html', formats=fmts, categories=ctgs)
+        body = render('adm_add_course.html', formats=fmts, tree=engine.get_html_tree(engine.category_tree))
         return ResponseData(request, body=body)
 
     def post(self, request: RequestData, *args, **kwargs):
-        ctg = request.POST.get('categories', [''])[0]
+        path = request.POST.get('selected-ctg', [''])[0]
         name = request.POST.get('name', [''])[0]
         fmt = request.POST.get('format', [''])[0]
         fmts = engine.get_learning_formats()
-        ctgs = engine.categories
-        if engine.create_course(ctg, name, fmt):
-            msg = f'Создан новый курс: {name}'
-            return ResponseData(request, body=render('adm_add_course.html', formats=fmts, categories=ctgs, msg=msg))
-        msg = f'Ошибка создания курса: {name}'
-        return ResponseData(request, body=render('adm_add_course.html', formats=fmts, categories=ctgs, msg=msg))
+        if engine.create_course(path, name, fmt):
+            return ResponseData(request, body=render('adm_add_course.html',
+                                                     formats=fmts,
+                                                     tree=engine.get_html_tree(engine.category_tree),
+                                                     msg=f'Создан новый курс: {name}'))
+        return ResponseData(request, body=render('adm_add_course.html',
+                                                 formats=fmts,
+                                                 tree=engine.get_html_tree(engine.category_tree),
+                                                 msg=f'Ошибка создания курса: {name}'))
 
 
 class ShowCourses(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
-        body = render('adm_show_courses.html', categories=engine.categories)
+        body = render('adm_show_courses.html', tree=engine.get_html_tree(engine.category_tree))
         return ResponseData(request, body=body)
