@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from wsgiref import simple_server
 
-from fwk.main import Framework
+from fwk.main import DebugApplication
 from fwk.middleware import middlewares
 from views import urlpatterns
 
@@ -19,7 +19,7 @@ settings = {
     'STATIC_ROOT': str(BASE_DIR / STATIC[1:-1]),
 }
 
-app = Framework(urls=urlpatterns, settings=settings, middlewares=middlewares)
+app = DebugApplication(urls=urlpatterns, settings=settings, middlewares=middlewares)
 
 
 if __name__ == "__main__":
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # Make and start the server until control-c
     httpd = simple_server.make_server("", port, app)
-    print(f"Serving {path} on port {port}, control-C to stop")
+    print(f"Debug Serving {path} on port {port}, control-C to stop")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
