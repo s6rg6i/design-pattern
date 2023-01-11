@@ -5,7 +5,9 @@ from pathlib import Path
 
 class User:
     """ Абстрактный пользователь """
-    pass
+
+    def __init__(self, name):
+        self.name = name
 
 
 class Teacher(User):
@@ -15,7 +17,10 @@ class Teacher(User):
 
 class Student(User):
     """ Студент """
-    pass
+
+    def __init__(self, name):
+        self.courses = []
+        super().__init__(name)
 
 
 class UserFactory:
@@ -23,8 +28,8 @@ class UserFactory:
     types = dict(student=Student, teacher=Teacher)
 
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)
 
 
 class CoursePrototype:
@@ -37,9 +42,10 @@ class CoursePrototype:
 class Course(CoursePrototype):
     """ Базовый класс"""
 
-    def __init__(self, name, learning_form):
+    def __init__(self, name: str, learning_form: str):
         self.name = name
         self.learning_form = learning_form
+        self.users: list[User] = []
 
     def __repr__(self):
         return f'{self.name}'
@@ -92,6 +98,8 @@ class Engine:
 
     def __init__(self):
         self.category_tree: Category = Category('ROOT')
+        self.students: list[User] = []
+        self.courses: list[Course] = []
 
     @staticmethod
     def get_obj_by_name(name, lst):
@@ -124,8 +132,24 @@ class Engine:
             return False
         if all([course_name, form in CourseFactory.learning_formats]):
             if not self.get_obj_by_name(course_name, ctg_node.courses):
-                ctg_node.courses.append(CourseFactory.create(course_name, form))
+                course = CourseFactory.create(course_name, form)
+                ctg_node.courses.append(course)
+                if not self.get_obj_by_name(course_name, self.courses):
+                    self.courses.append(course)
                 return True
+        return False
+
+    def create_student(self, name: str, course_name: str):
+        if not name:
+            return False
+        if not (student := self.get_obj_by_name(name, self.students)):
+            student = UserFactory.create('student', name)
+            self.students.append(student)
+        if course_name:
+            if course := self.get_obj_by_name(course_name, self.courses):
+                if not self.get_obj_by_name(name, course.users):
+                    course.users.append(student)
+            return True
         return False
 
     def get_nodes(self, tree: Category):
@@ -199,8 +223,6 @@ if __name__ == "__main__":
     engine = Engine()
     engine.load_test_data()
     print(engine.get_html_tree(engine.category_tree))
-
-
 
     # print(engine.category_tree)
     # logger1, logger2 = Logger('log1'), Logger('log2')
