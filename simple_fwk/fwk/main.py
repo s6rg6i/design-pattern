@@ -88,7 +88,7 @@ class Framework:
 
 
 class DebugApplication(Framework):
-    """ WSGI-application (логгирующий). Как основной, только выводит информацию о запросе в консоль """
+    """ WSGI-application (логирующий). Как основной, только выводит информацию о запросе в консоль """
 
     def __init__(self, urls: List[Url], settings: dict, middlewares: List[Type[BaseMiddleware]]):
         self.application = Framework(urls, settings, middlewares)
