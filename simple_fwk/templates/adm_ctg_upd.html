@@ -1,0 +1,44 @@
+{% extends "adm.html" %}
+{% block admin %}
+
+<form class="form" action="" method="post" name="sel_course">
+    <ul>
+        <li>
+            <h3>Редактировать категорию</h3>
+        </li>
+        <li>
+            <label for="sel_category">Выберите категорию:</label>
+            <select name="category" id="sel_category">
+                {% for category in categories %}
+                    {% if loop.index == category_idx %}
+                        <option value="{{loop.index}}" selected>{{ category.name }}</option>
+                    {% else %}
+                        <option value="{{loop.index}}">{{ category.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </li>
+        <li>
+            <label></label>
+            <button name="btn" type="submit" value="sel">Выбрать</button>
+            <button name="btn" type="submit" value="del">Удалить</button>
+        </li>
+    </ul>
+</form>
+<form class="form" action="" method="post" name="upd_category">
+    <ul>
+        <li>
+            <h3>Изменить категорию</h3>
+        </li>
+        <li>
+            <label for="name">Название:</label>
+            <input  type="text"  Value="{{ categories[category_idx-1].name}}" id="name" name="name" required/>
+        </li>
+        <li>
+            <label></label>
+            <button name="btn" type="submit" value="upd">Изменить</button>
+        </li>
+    </ul>
+</form>
+{{ msg }}
+{% endblock %}

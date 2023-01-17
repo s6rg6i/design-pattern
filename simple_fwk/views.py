@@ -2,22 +2,26 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from datetime import datetime
 
+from fwk.url import AppRoute
 from patterns.behavioral import TemplateView
-from patterns.structural import AppRoute
 
 if TYPE_CHECKING:
     from fwk.request import RequestData
-from patterns.creational import Engine
+from models import Engine
 from fwk.response import ResponseData
 from fwk.jinja import render
 from fwk.view import BaseView
 
 engine = Engine()
-engine.load_test_data()  # загрузка тестовых данных
-urlpatterns = []
+urlpatterns = AppRoute.routes
+admin_panel = [("Курсы", ("/add-course", "/upd-course", "/lst-course")),
+               ("Категории", ("/add-ctg", "/upd-ctg", "/lst-ctg")),
+               ("Студенты", ("/add-stud", "/upd-stud", "/lst-stud")),
+               ("Курсы-Категории", ("/add-c-ctg", "/upd-c-ctg", "/lst-c-ctg")),
+               ("Курсы-Студенты", ("/add-c-stud", "/upd-c-stud", "/lst-c-stud")), ]
 
 
-@AppRoute(routes=urlpatterns, url='/')
+@AppRoute(url='/')
 class Index(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
         user_name = request.extra.get('user_name', 'Незнакомец')
@@ -37,7 +41,7 @@ class Index(BaseView):
         return ResponseData(request, body=body)
 
 
-@AppRoute(routes=urlpatterns, url='/about/')
+@AppRoute(url='/about/')
 class About(TemplateView):
     get_template_name = post_template_name = 'about.html'
 
@@ -46,77 +50,144 @@ class About(TemplateView):
         return super().post(request, **kwargs)
 
 
-@AppRoute(routes=urlpatterns, url='/adm/')
+@AppRoute(url='/adm/')
 class Adm(TemplateView):
     get_template_name = 'adm.html'
+    get_context_data = dict(items=admin_panel)
 
 
-@AppRoute(routes=urlpatterns, url='/add-ctg/')
-class AddCategory(BaseView):
+# *****************************
+# ** Courses
+# *****************************
+@AppRoute(url='/add-course/')
+class CourseAdd(BaseView):
     def get(self, request: RequestData, *args, **kwargs):
-        body = render('adm_add_ctg.html', tree=engine.get_html_tree(engine.category_tree))
-        return ResponseData(request, body=body)
-
-    def post(self, request: RequestData, *args, **kwargs):
-        ctg = request.POST.get('name', [''])[0]
-        path = request.POST.get('selected-ctg', [''])[0]
-        if engine.create_category(path, ctg):
-            return ResponseData(request, body=render('adm_add_ctg.html',
-                                                     tree=engine.get_html_tree(engine.category_tree),
-                                                     msg=f'Создана новая категория: {ctg}'))
-        return ResponseData(request,
-                            body=render('adm_add_ctg.html',
-                                        tree=engine.create_category(path, ctg),
-                                        msg=f'Ошибка создания категории: {ctg}'))
-
-
-@AppRoute(routes=urlpatterns, url='/add-course/')
-class AddCourse(BaseView):
-    def get(self, request: RequestData, *args, **kwargs):
-        fmts = engine.get_learning_formats()
-        body = render('adm_add_course.html', formats=fmts, tree=engine.get_html_tree(engine.category_tree))
-        return ResponseData(request, body=body)
-
-    def post(self, request: RequestData, *args, **kwargs):
-        path = request.POST.get('selected-ctg', [''])[0]
-        name = request.POST.get('name', [''])[0]
-        fmt = request.POST.get('format', [''])[0]
-        fmts = engine.get_learning_formats()
-        if engine.create_course(path, name, fmt):
-            return ResponseData(request, body=render('adm_add_course.html',
-                                                     formats=fmts,
-                                                     tree=engine.get_html_tree(engine.category_tree),
-                                                     msg=f'Создан новый курс: {name}'))
-        return ResponseData(request, body=render('adm_add_course.html',
-                                                 formats=fmts,
-                                                 tree=engine.get_html_tree(engine.category_tree),
-                                                 msg=f'Ошибка создания курса: {name}'))
-
-
-@AppRoute(routes=urlpatterns, url='/show-courses/')
-class ShowCourses(TemplateView):
-    get_template_name = 'adm_show_courses.html'
-    get_context_data = dict(tree=engine.get_html_tree(engine.category_tree))
-
-
-@AppRoute(routes=urlpatterns, url='/add-students/')
-class AddStudents(TemplateView):
-    get_template_name = post_template_name = 'adm_add_students.html'
-    get_context_data = post_context_data = dict(courses=engine.courses)
+        return ResponseData(request, body=render('adm_course_add.html', items=admin_panel))
 
     def post(self, request: RequestData, **kwargs):
-        self.post_args = [request.POST.get('name', [''])[0], request.POST.get('course', [''])[0]]
-        return super().post(request, **kwargs)
+        name = request.POST.get('name', [''])[0]
+        form = request.POST.get('form', [''])[0]
+        descr = request.POST.get('message', [''])[0]
+        msg = engine.create_course(name, form, descr)
+        return ResponseData(request, body=render('adm_course_add.html', items=admin_panel, msg=msg))
 
-    def create_obj(self, name, course_name):
-        if engine.create_student(name, course_name):
-            msg = f'Студент {name} добавлен на курс {course_name} '
+
+@AppRoute(url='/upd-course/')
+class CourseUpd(BaseView):
+    def get(self, request: RequestData, **kwargs):
+        context = dict(items=admin_panel, courses=engine.courses, course_idx=engine.course_idx)
+        engine.course_idx = 1
+        return ResponseData(request, body=render('adm_course_upd.html', **context))
+
+    def post(self, request: RequestData, **kwargs):
+        if (btn := request.POST.get('btn', [''])[0]) == "sel":
+            engine.course_idx = int(request.POST.get('course', [''])[0])
+            msg = ''
+        elif btn == 'upd':
+            name = request.POST.get('name', [''])[0]
+            form = request.POST.get('form', [''])[0]
+            descr = request.POST.get('message', [''])[0]
+            msg = engine.update_course(name, form, descr)
+        elif btn == 'del':
+            engine.course_idx = int(request.POST.get('course', [''])[0])
+            msg = engine.delete_course()
         else:
-            msg = f'Ошибка добавления студента: {name}'
-        self.post_context_data.update(dict(msg=msg))
+            msg = 'Неизвестная операция'
+        context = dict(items=admin_panel, courses=engine.courses, course_idx=engine.course_idx, msg=msg)
+        return ResponseData(request, body=render('adm_course_upd.html', **context))
 
 
-@AppRoute(routes=urlpatterns, url='/show-students/')
-class ShowCourses(TemplateView):
-    get_template_name = 'adm_show_students.html'
-    get_context_data = dict(courses_list=engine.courses)
+@AppRoute(url='/lst-course/')
+class CoursesLst(BaseView):
+    def get(self, request: RequestData, **kwargs):
+        return ResponseData(request, body=render('adm_course_lst.html', items=admin_panel, courses=engine.courses))
+
+
+# *****************************
+# ** Categories
+# *****************************
+@AppRoute(url='/add-ctg/')
+class CategoryAdd(BaseView):
+    def get(self, request: RequestData, **kwargs):
+        return ResponseData(request, body=render('adm_ctg_add.html', items=admin_panel))
+
+    def post(self, request: RequestData, **kwargs):
+        name = request.POST.get('name', [''])[0]
+        msg = engine.create_category(name)
+        return ResponseData(request, body=render('adm_ctg_add.html', items=admin_panel, msg=msg))
+
+
+@AppRoute(url='/upd-ctg/')
+class CategoryUpd(BaseView):
+    def get(self, request: RequestData, **kwargs):
+        context = dict(items=admin_panel, categories=engine.categories, category_idx=engine.category_idx)
+        engine.category_idx = 1
+        return ResponseData(request, body=render('adm_ctg_upd.html', **context))
+
+    def post(self, request: RequestData, **kwargs):
+        if (btn := request.POST.get('btn', [''])[0]) == "sel":
+            engine.category_idx = int(request.POST.get('category', [''])[0])
+            msg = ''
+        elif btn == 'upd':
+            name = request.POST.get('name', [''])[0]
+            msg = engine.update_category(name)
+        elif btn == 'del':
+            engine.category_idx = int(request.POST.get('category', [''])[0])
+            msg = engine.delete_category()
+        else:
+            msg = 'Неизвестная операция'
+        context = dict(items=admin_panel, categories=engine.categories, category_idx=engine.category_idx, msg=msg)
+        return ResponseData(request, body=render('adm_ctg_upd.html', **context))
+
+
+@AppRoute(url='/lst-ctg/')
+class CategoryLst(BaseView):
+    def get(self, request: RequestData, **kwargs):
+        return ResponseData(request, body=render('adm_ctg_lst.html', items=admin_panel, categories=engine.categories))
+
+# *****************************
+# ** Student
+# *****************************
+
+
+@AppRoute(url='/add-stud/')
+class StudentAdd(BaseView):
+    def get(self, request: RequestData, *args, **kwargs):
+        return ResponseData(request, body=render('adm_student_add.html', items=admin_panel))
+
+    def post(self, request: RequestData, **kwargs):
+        lastname = request.POST.get('lastname', [''])[0]
+        firstname = request.POST.get('firstname', [''])[0]
+        msg = engine.create_student(lastname, firstname)
+        return ResponseData(request, body=render('adm_student_add.html', items=admin_panel, msg=msg))
+
+
+@AppRoute(url='/upd-stud/')
+class StudentUpd(BaseView):
+    def get(self, request: RequestData, **kwargs):
+        context = dict(items=admin_panel, users=engine.users, user_idx=engine.user_idx)
+        engine.user_idx = 1
+        return ResponseData(request, body=render('adm_student_upd.html', **context))
+
+    def post(self, request: RequestData, **kwargs):
+        if (btn := request.POST.get('btn', [''])[0]) == "sel":
+            engine.user_idx = int(request.POST.get('user', [''])[0])
+            msg = ''
+        elif btn == 'upd':
+            last_name = request.POST.get('lastname', [''])[0]
+            first_name = request.POST.get('firstname', [''])[0]
+            msg = engine.update_student(last_name, first_name)
+        elif btn == 'del':
+            engine.user_idx = int(request.POST.get('user', [''])[0])
+            msg = engine.delete_student()
+        else:
+            msg = 'Неизвестная операция'
+        context = dict(items=admin_panel, users=engine.users, user_idx=engine.user_idx, msg=msg)
+        return ResponseData(request, body=render('adm_student_upd.html', **context))
+
+
+@AppRoute(url='/lst-stud/')
+class StudentsLst(BaseView):
+    def get(self, request: RequestData, **kwargs):
+        return ResponseData(request, body=render('adm_student_lst.html', items=admin_panel, users=engine.users))
+

@@ -1,0 +1,16 @@
+{% extends "adm.html" %}
+{% block admin %}
+
+<p><h4>Список курсов</h4>
+<hr/>
+
+<div class="list">
+    {% for course in courses %}
+        <div class="row">
+            <span>{{ course.name }}</span>
+            <section>{{ course.form }}</section>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

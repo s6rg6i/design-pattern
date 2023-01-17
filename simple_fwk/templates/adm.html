@@ -13,23 +13,17 @@
 {% endblock %}
 
 {% block body %}
-<p><h1>Панель администрирования</h1></p>
-<fieldset>
-    <div class="adm-parent">
-        <li class="adm-1"><h2>Категории</h2></li>
-        <li class="adm-2"><a href="/add-ctg">Добавить</a></li>
-        <li class="adm-2"><a href="/show-courses">Показать</a></li>
+    <h3>Панель администрирования</h3>
+    <hr>
+    <div class="list">
+        {% for item, path in items %}
+        <div class=row>
+            <span>{{ item }}</span>
+            <a href="{{ path[0] }}" target="_parent"><button>Добавить</button></a>
+            <a href="{{ path[1] }}" target="_parent"><button>Изменить</button></a>
+            <a href="{{ path[2] }}" target="_parent"><button>Показать</button></a>
+        </div>
+        {% endfor %}
     </div>
-    <div class="adm-parent">
-        <li class="adm-1"><h2>Курсы</h2></li>
-        <li class="adm-2"><a href="/add-course">Добавить</a></li>
-        <li class="adm-2"><a href="/show-courses">Показать</a></li>
-    </div>
-        <div class="adm-parent">
-        <li class="adm-1"><h2>Студенты</h2></li>
-        <li class="adm-2"><a href="/add-students">Добавить</a></li>
-        <li class="adm-2"><a href="/show-students">Показать</a></li>
-    </div>
-
-</fieldset>
+    {% block admin %}{% endblock %}
 {% endblock %}

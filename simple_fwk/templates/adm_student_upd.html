@@ -1,0 +1,48 @@
+{% extends "adm.html" %}
+{% block admin %}
+
+<form class="form" action="" method="post" name="sel_user">
+    <ul>
+        <li>
+            <h3>Редактировать дынные студентов</h3>
+        </li>
+        <li>
+            <label for="sel_user">Выберите студента:</label>
+            <select name="user" id="sel_user">
+                {% for user in users %}
+                    {% if loop.index == category_idx %}
+                        <option value="{{loop.index}}" selected>{{ user.last_name }}</option>
+                    {% else %}
+                        <option value="{{loop.index}}">{{ user.last_name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </li>
+        <li>
+            <label></label>
+            <button name="btn" type="submit" value="sel">Выбрать</button>
+            <button name="btn" type="submit" value="del">Удалить</button>
+        </li>
+    </ul>
+</form>
+<form class="form" action="" method="post" name="upd_student">
+    <ul>
+        <li>
+            <h3>Изменить дынные студента</h3>
+        </li>
+        <li>
+            <label for="lastname">Фамилия:</label>
+            <input  type="text"  Value="{{ users[user_idx-1].last_name}}" id="lastname" name="lastname" required/>
+        </li>
+        <li>
+            <label for="firstname">Имя:</label>
+            <input  type="text"  Value="{{ users[user_idx-1].first_name}}" id="firstname" name="firstname" required/>
+        </li>
+        <li>
+            <label></label>
+            <button name="btn" type="submit" value="upd">Изменить</button>
+        </li>
+    </ul>
+</form>
+{{ msg }}
+{% endblock %}

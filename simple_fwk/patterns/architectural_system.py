@@ -1,5 +1,7 @@
 from threading import local
 
+from patterns.unit_of_work import MapperRegistry
+
 
 class UnitOfWork:
     """ Архитектурный системный паттерн UNIT OF WORK """

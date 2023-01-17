@@ -7,8 +7,9 @@ class BaseMapper:
     def commit(self):
         try:
             self.connection.commit()
+            return 'Операция завершилась успешно'
         except Exception as e:
-            print(e.args)
+            return f'Ошибка: {str(e)}'
 
     def all(self, obj):
         statement = f'SELECT * from {getattr(obj, "table_name")}'
@@ -24,7 +25,7 @@ class BaseMapper:
         tbl = getattr(obj, "table_name")
         statement = f'INSERT INTO {tbl} ({",".join(fields)}) VALUES ({("?," * quan).strip(",")})'
         self.cursor.execute(statement, (*values,))
-        self.commit()
+        return self.commit()
 
     def update(self, obj, d: dict):
         """ Операция UPDATE: 'UPDATE books SET price = ? WHERE id = ?' """
@@ -34,11 +35,11 @@ class BaseMapper:
         tbl = getattr(obj, "table_name")
         statement = f'UPDATE {tbl} SET {fields_str} WHERE id=?'
         self.cursor.execute(statement, (*values, obj.id))
-        self.commit()
+        return self.commit()
 
     def delete(self, obj):
         """ Операция DELETE: 'DELETE FROM books WHERE id=?' """
         statement = f'DELETE FROM {getattr(obj, "table_name")} WHERE id=?'
         self.cursor.execute(statement, (obj.id,))
-        self.commit()
+        return self.commit()
 
