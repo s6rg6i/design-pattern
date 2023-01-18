@@ -1,0 +1,22 @@
+{% extends "adm.html" %}
+{% block admin %}
+    <form class="form" action="" method="post" name="add_course">
+        <ul>
+            <li>
+                <h3>Добавить нового студента</h3>
+            </li>
+            <li>
+                <label for="lastname">Фамилия:</label>
+                <input id="lastname" type="text" name="lastname" required />
+            </li>
+            <li>
+                <label for="firstname">Имя:</label>
+                <input id="firstname" type="text" name="firstname" />
+            </li>
+            <li>
+                <label></label><button class="submit" type="submit" value="add">Добавить</button>
+            </li>
+        </ul>
+    </form>
+    {{ msg }}
+{% endblock %}

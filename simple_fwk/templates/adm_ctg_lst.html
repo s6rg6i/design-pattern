@@ -1,0 +1,16 @@
+{% extends "adm.html" %}
+{% block admin %}
+
+<p><h4>Список категорий</h4>
+<hr/>
+
+<div class="list">
+    {% for ctg in categories %}
+        <div class="row">
+            <span>{{ ctg.name }}</span>
+            <section></section>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

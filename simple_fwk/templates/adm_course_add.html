@@ -1,0 +1,26 @@
+{% extends "adm.html" %}
+{% block admin %}
+    <form class="form" action="" method="post" name="add_course">
+        <ul>
+            <li>
+                <h3>Добавить новый курс</h3>
+            </li>
+            <li>
+                <label for="name">Название:</label>
+                <input id="name" type="text" name="name" required />
+            </li>
+            <li>
+                <label for="form">Форма обучения:</label>
+                <input id="form" type="text" name="form" />
+            </li>
+            <li>
+                <label for="message">Описание:</label>
+                <textarea id="message" name="message" cols="40" rows="6"></textarea>
+            </li>
+            <li>
+                <label></label><button class="submit" type="submit" value="add">Добавить</button>
+            </li>
+        </ul>
+    </form>
+    {{ msg }}
+{% endblock %}

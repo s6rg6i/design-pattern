@@ -86,38 +86,3 @@ class Framework:
         for front in self.middlewares:
             front().to_response(response, users_)
 
-
-class DebugApplication(Framework):
-    """ WSGI-application (логгирующий). Как основной, только выводит информацию о запросе в консоль """
-
-    def __init__(self, urls: List[Url], settings: dict, middlewares: List[Type[BaseMiddleware]]):
-        self.application = Framework(urls, settings, middlewares)
-
-    def __call__(self, env, start_response):
-        print('DEBUG MODE:')
-        print(env)
-        return self.application(env, start_response)
-
-
-class FakeApplication:
-    """ WSGI-application (фейковый). На все запросы пользователя отвечает: 200 OK, Hello from Fake """
-
-    def __call__(self, env, start_response):
-        start_response('200 OK', [('Content-Type', 'text/html')])
-        return [b'Hello from Fake']
-
-
-if __name__ == "__main__":
-    if input('Введите 0 - для запуска FakeApplication, иначе запуск DebugApplication\n') == '0':
-        print('--- FakeApplication:')
-        app = FakeApplication()
-    else:
-        print('--- DebugApplication:')
-        app = DebugApplication()
-    httpd = simple_server.make_server("", 8000, app)
-    print(f"FakeServer 127.0.0.1 on port 8000, control-C to stop")
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("Shutting down.")
-        httpd.server_close()

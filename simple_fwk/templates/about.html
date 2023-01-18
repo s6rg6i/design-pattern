@@ -13,26 +13,46 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Свяжитесь с нами</h1>
-    <div>
-        <p><a href="tel:+375296820352" class="tel">+375 (29) 682-82-82</a></p>
-        <p><a href="mailto:zzz@yandex.by" class="mail">zzz@yandex.by</a></p>
+    <h2>Свяжитесь с нами</h2>
+
+    <div class="list">
+        <div class="row">
+            <span>Телефон</span>
+            <section>+375 (29) 682-82-82</section>
+        </div>
+        <div class="row">
+            <span>Почта</span>
+            <a href="mailto:zzz@yandex.by" class="mail">zzz@yandex.by</a>
+        </div>
+        <div class="row">
+            <span>Телеграм</span>
+            <section>@learning</section>
+        </div>
     </div>
-    <form action="" method="post">
-        <fieldset>
-            <legend>Напишите нам</legend>
-            <p>
-                <label class="title" for="name">Ваше имя:</label>
-                <input type="text" name="name" id="name"><br />
-                <label class="title" for="email">Ваш email:</label>
-                <input type="email" name="email" id="email"><br />
-                <label class="title" for="subject">Тема:</label>
-                <input type="text" name="subject" id="subject"><br />
-                <label class="title" for="message">Сообщение:</label>
-                <textarea name="message" type="message" id="message" maxlength="600"></textarea>
-            </p>
-        </fieldset>
-        <div class="submit"><input type="submit" value="ОТПРАВИТЬ" /></div>
+    <form class="form" action="" method="post" name="add_course">
+        <ul>
+            <li>
+                <h3>Напишите нам</h3>
+            </li>
+            <li>
+                <label for="name">Ваше имя:</label>
+                <input id="name" type="text" name="name" required />
+            </li>
+            <li>
+                <label for="email">Ваш email:</label>
+                <input id="email" type="text" name="email" required />
+            </li>
+            <li>
+                <label for="subject">Тема:</label>
+                <input id="subject" type="text" name="subject" required />
+            </li>
+            <li>
+                <label for="descr">Описание:</label>
+                <textarea id="descr" name="descr" cols="40" rows="6"></textarea>
+            </li>
+            <li>
+                <label></label><button class="submit" type="submit">Отправить</button>
+            </li>
+        </ul>
     </form>
-    <p>{{ post }}</p>
 {% endblock %}

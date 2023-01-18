@@ -1,0 +1,53 @@
+{% extends "adm.html" %}
+{% block admin %}
+
+<form class="form" action="" method="post" name="sel_course">
+    <ul>
+        <li>
+            <h3>Редактировать курс</h3>
+        </li>
+        <li>
+            <label for="sel_course">Выберите курс:</label>
+            <select name="course" id="sel_course">
+                {% for course in courses %}
+                    {% if loop.index == course_idx %}
+                        <option value="{{loop.index}}" selected>{{ course.name }}</option>
+                    {% else %}
+                        <option value="{{loop.index}}">{{ course.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </li>
+        <li>
+            <label></label>
+            <button name="btn" type="submit" value="sel">Выбрать</button>
+            <button name="btn" type="submit" value="del">Удалить</button>
+        </li>
+    </ul>
+</form>
+<form class="form" action="" method="post" name="upd_course">
+    <ul>
+        <li>
+            <h3>Изменить курс</h3>
+        </li>
+        <li>
+            <label for="name">Название:</label>
+            <input  type="text"  Value="{{ courses[course_idx-1].name}}" id="name" name="name" required/>
+        </li>
+        <li>
+            <label for="form">Форма обучения:</label>
+            <input Value="{{ courses[course_idx-1].form}}" id="form" type="text" name="form"/>
+        </li>
+
+        <li>
+            <label for="message">Описание:</label>
+            <textarea id="message" name="message" cols="40" rows="6">{{ courses[course_idx-1].description }}</textarea>
+        </li>
+        <li>
+            <label></label>
+            <button name="btn" type="submit" value="upd">Изменить</button>
+        </li>
+    </ul>
+</form>
+{{ msg }}
+{% endblock %}
